@@ -1,0 +1,19 @@
+cc [ENVIRONMENT]
+ENV = LOCAL
+#ENV = UAT
+
+
+
+[CI]
+ENABLE = False
+
+[LOCAL]
+DRIVER = ODBC Driver 17 for SQL Server
+SERVER = L3163213\MYLOCAL
+DATABASE = AdventureWorksDW2022
+USER = 'test'
+PASSWORD = 'test'
+TRUSTED_CONNECTION = 'yes'
+
+[AI]
+GEMINI_API_KEY = AIzaSyD3sZ9lTdxVZhGSMwmF-HPjs60Au5wtq7U
