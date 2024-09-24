@@ -2,6 +2,12 @@ from openai import AzureOpenAI
 import configparser
 import pyodbc
 import pandas as pd
+from graphviz import Digraph
+import networkx as nx
+import matplotlib.pyplot as plt
+import os
+
+import streamlit as st
 config = configparser.ConfigParser()
 config.read('config.ini')
 
@@ -10,7 +16,7 @@ config.read('config.ini')
 api_base = config["AI"]["AZURE_OPENAI_ENDPOINT"]
 api_key= config["AI"]["AZURE_OPENAI_API_KEY"]
 deployment_name = config["AI"]["deployment_name"]
-api_version = config["AI"]["api_version"] # this might change in the future
+api_version = config["AI"]["api_version"] 
 
 client = AzureOpenAI(
     api_key=api_key,  
@@ -18,7 +24,6 @@ client = AzureOpenAI(
     base_url=f"{api_base}/openai/deployments/{deployment_name}"
 )
 
-print(vars(client))
 
 
 def call_ai_engineer(data):
@@ -77,6 +82,8 @@ def convert_sql_response_to_schema(sql_response):
 
     return "\n".join(schema_lines)
 
+
+
 relationshipDetails = {}
 def get_db_relationship(cursor):
     query = f"""
@@ -104,15 +111,71 @@ def get_db_relationship(cursor):
     cursor.execute(query)
     rows = cursor.fetchall()
     df = getDataFrame(cursor,rows=rows)
-    
+    df.to_csv('../data/relationship.txt', sep='\t', index=False)
+    df.to_pickle('../data/relationship.pkl')
     return df
 cursor = connect_to_db()
-schema = get_schema_details(cursor=cursor)
-formated_schema = convert_sql_response_to_schema(schema)
+#schema = get_schema_details(cursor=cursor)
+#formated_schema = convert_sql_response_to_schema(schema)
 #print (formated_schema)
 rs = get_db_relationship(cursor=cursor)
 print(rs)
-ai_response = call_ai_engineer(rs)
 
 
-print(ai_response)
+
+
+def create_relationship_diagram(df=rs,table_name='DimProduct'):
+    dot = Digraph(format='png')
+    df = df[(df.Referenced_Table==table_name) | (df.Parent_Table==table_name)]
+    # Set graph size
+    dot.attr(size='10,80')  # Change size as needed
+    dot.attr(dpi='500')      # Higher DPI for better quality
+
+    # Add nodes and edges based on the DataFrame
+    for _, row in df.iterrows():
+        # Add parent and referenced tables as nodes
+        dot.node(row['Referenced_Table'], row['Referenced_Table'], style="filled", fillcolor="lightblue", fontsize='12')
+        dot.node(row['Parent_Table'], row['Parent_Table'], style="filled", fillcolor="lightgreen", fontsize='12')
+
+        # Add an edge representing the foreign key relationship
+        dot.edge(row['Referenced_Table'], row['Parent_Table'], label=row['FK_Name'], fontsize='10')
+    dot.render('relationship_diagram', cleanup=True)
+    return dot
+
+# Create the diagram
+relationship_diagram = create_relationship_diagram(rs)
+
+# Save and render the diagram
+# Check if file relationship_diagram already exists, delete that file
+if os.path.exists('relationship_diagram.png'):
+    os.remove('relationship_diagram.png')
+else:
+    relationship_diagram.render('relationship_diagram', cleanup=True)
+
+
+
+
+
+# Sidebar
+""" with st.sidebar:
+    st.markdown(
+        "## How to use\n"
+        "1. Enter your [OpenAI API key](https://platform.openai.com/account/api-keys) below🔑\n"  # noqa: E501
+        "2. Upload a pdf, docx, or txt file📄\n"
+        "3. Ask a question about the document💬\n"
+    )
+st.title("AI TechBA - Data Engineer Assistant")
+
+# Chat Window
+input_text = st.text_area("Enter your input text here:")
+
+if st.button("Submit"):
+    st.write("You entered:", input_text)
+    st.write("AI response will be displayed here")
+    st.image('relationship_diagram.png')
+    input_text = input_text.replace('\n', ' ')"""
+#ai_response = call_ai_engineer(rs)
+
+
+#print(ai_response)
+

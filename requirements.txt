@@ -3,3 +3,8 @@ requests  # For making HTTP requests to APIs
 pyodbc  # For interacting with SQL Server
 pandas  # For data manipulation and analysis
 sqlalchemy  # For creating and executing SQL code
+pandas
+graphviz 
+streamlit
+langchain
+langchain_openai
