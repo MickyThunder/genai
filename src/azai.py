@@ -1,3 +1,4 @@
+import random
 from openai import AzureOpenAI
 import configparser
 import pyodbc
@@ -6,7 +7,7 @@ from graphviz import Digraph
 import networkx as nx
 import matplotlib.pyplot as plt
 import os
-
+from faker import Faker
 import streamlit as st
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -82,7 +83,42 @@ def convert_sql_response_to_schema(sql_response):
 
     return "\n".join(schema_lines)
 
+def get_table_schema(cursor,table_name):
+    # Fetch column names and data types
+    cursor.execute(f"""
+        SELECT COLUMN_NAME, DATA_TYPE
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = '{table_name}'
+    """)
+    return cursor.fetchall()
 
+def generate_test_data(cursor,table_name, num_rows=100):
+    fake = Faker()
+    schema = get_table_schema(cursor,table_name)
+    test_data = {column: [] for column, _ in schema}
+
+    for _ in range(num_rows):
+        for column, data_type in schema:
+            if data_type in ('int', 'smallint', 'tinyint'):
+                test_data[column].append(random.randint(1, 100))  # Generate random integer
+            elif data_type in ('float', 'decimal', 'money'):
+                test_data[column].append(round(random.uniform(1.0, 100.0), 2))  # Generate random float
+            elif data_type == 'varchar' or data_type == 'nvarchar':
+                test_data[column].append(fake.sentence())  # Generate random string
+            elif data_type == 'datetime':
+                test_data[column].append(fake.date_time_this_year())  # Generate random datetime
+            else:
+                test_data[column].append(None)  # Default for unsupported types
+    df = pd.DataFrame(test_data)
+    #df.to_csv(f'../data/{table_name}.csv')
+    st.chat_message("assistant").warning(f"Test data for table {table_name} have been created successfully!!! :+1: :tada:")
+    st.download_button(
+    label=f"Test data for table {table_name}",
+    data=df.to_csv().encode("utf-8"),
+    file_name=f"../data/{table_name}.csv",
+    mime="text/csv",
+)
+    
 
 relationshipDetails = {}
 def get_db_relationship(cursor):
@@ -120,7 +156,10 @@ cursor = connect_to_db()
 #print (formated_schema)
 rs = get_db_relationship(cursor=cursor)
 print(rs)
-
+# Get unique table names from Parent_Table and Referenced_Table
+unique_tables = pd.Series(rs['Parent_Table'].tolist() + rs['Referenced_Table'].tolist()).unique()
+unique_tables = [table.lower() for table in unique_tables]
+unique_tables = sorted(unique_tables) 
 
 
 
