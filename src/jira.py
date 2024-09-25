@@ -58,7 +58,7 @@ def make_story(raw_text):
     details = []
 
     # Check if the raw text contains both "Jira story" and "Acceptance Criteria"
-    if "Story" in raw_text and "Acceptance Criteria" in raw_text:
+    if ("Story" in raw_text or "Title" in raw_text) and "Acceptance Criteria" in raw_text:
         # Split the raw text into lines
         lines = raw_text.strip().split('\n')
 

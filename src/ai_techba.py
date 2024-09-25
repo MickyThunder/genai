@@ -130,7 +130,7 @@ questions = [
     "What are the possible relationship for DimProduct table?",
     "Generate a DDL for the new table name DimFun having primary key action_id joined with DimProductCategory table.",
     "What kind of data is in the database from a business perspective?",
-    "I want to ingest data from DimProduct table into new table DimProducta which has all columns the same as DimProduct but EnglishProductName and SpanishProductName from DimProduct Table concatenated into Column ProductNames in DimProducta.",
+    "I want to ingest data from DimProduct table into new table DimProducta which has all columns the same as DimProduct but EnglishProductName and SpanishProductName from DimProduct Table concatenated into Column ProductNames in DimProducta.Provide me SQL queries for ETL and details on how to use them",
     "Generate test data for DimAccount table."
 ]
 
