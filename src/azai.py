@@ -176,7 +176,7 @@ cursor = connect_to_db()
 rs = get_db_relationship(cursor=cursor)
 allData = get_all_tables(cursor)
 merged = pd.concat([rs,allData],axis=1)
-merged.to_csv('a2.csv')
+
 #merged_df = pd.concat([df_schema, df_fk], axis=1)
 print(merged)
 # Get unique table names from Parent_Table and Referenced_Table

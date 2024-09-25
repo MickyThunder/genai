@@ -116,6 +116,7 @@ words = """<h3>You can ask me questions like:</h3>
         <li>Generate a DDL for the new table name DimFun having primary key action_id joined with DimProductCategory table</li>
         <li>What kind of data in the database from business perspective?</li>
         <li>I want to ingest data from DimProduct table into new table DimProducta which has all columns same as DimProduct but EnglishProductName and SpanishProductName from DimProduct Table concatenated into Column ProductNames in DimProducta</li>
+        <>generate test data for DimAccount table</li>
     </ol>"""
 
 with st.expander("Sample Questions to ask:"):
@@ -173,7 +174,7 @@ if prompt := st.chat_input():
                     "type": "object",
                     "properties": {
                         "table_name": {"type": "string",
-                                       "description": "When a customer requests specifically create the relationship diagram for the table DimProduct, the table_name is set to DimProduct."
+                                       "description": "When a customer requests specifically create the relationship diagram for the table DimProduct, the table_name is set to DimProduct.Example:Give me the relationship diagram for DimAccount table"
                                        }
                     },
                     "required": ["table_name"]
