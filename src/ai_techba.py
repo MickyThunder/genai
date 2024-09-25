@@ -126,6 +126,14 @@ def stream_data():
         yield word + " "
         time.sleep(0.03)
         
+def contains_keywords(text):
+    keywords = ["relation", "relationship", "ER model", "join", "relate", "relationship diagram"]
+    # Convert text to lowercase for case-insensitive comparison
+    text_lower = text.lower()
+    return any(keyword in text_lower for keyword in keywords)
+
+
+    
 if "messages" not in st.session_state:
     st.session_state["messages"] = [ChatMessage(
         role="assistant", content="""How can I help you? :pray:""")]
@@ -156,6 +164,11 @@ if prompt := st.chat_input():
             st.stop()
     else:
         print("No valid table name mentioned in your prompt.")
+    showERDiagram = False
+    if contains_keywords(prompt.lower()):
+        showERDiagram = True
+    else:
+        showERDiagram = False
     # Convert ChatMessage objects to dictionaries
     messages = [{"role": msg.role, "content": msg.content}
                 for msg in st.session_state.messages]
@@ -215,8 +228,10 @@ if prompt := st.chat_input():
                             tool_call.function.arguments)
                         istool = True
                         print(f"Function arguments: {function_args}")
-                        create_relationship_diagram(
+                        if showERDiagram:
+                            create_relationship_diagram(
                             function_args.get("table_name"))
+                            break
 
                         messages.append({
                             "tool_call_id": tool_call.id,
