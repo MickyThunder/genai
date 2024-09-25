@@ -1,18 +1,23 @@
+import configparser
 import requests
 import json
 import urllib3
 import streamlit as st
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+config = configparser.ConfigParser()
+config.read('config.ini')
 
+
+ 
 # Jira API URL and authentication details
-JIRA_URL = "https://tarundeeptrial.atlassian.net"
-API_ENDPOINT = "/rest/api/2/issue"
-USERNAME = "tarundeep.sharma2009@gmail.com"
-API_TOKEN = "ATATT3xFfGF0Vwe0-G76r1AyOUUT_CM3ISFLaPgtRN_M5HXDZvAr2p-8KhI55MvY6DZfwEpvPDwgKTdqZxIu4JfaPbCDHaB4GK-NdyIxofriG7zWsI-R6VSlCsG9uIHWRbs6X0U_A74HuHr_q5F3c4FbeKhONKomeCpyqSgYxOCp-QsJyCHvphY=76D071F3"
+JIRA_URL = config["JIRA"]["JIRA_URL"]
+API_ENDPOINT = config["JIRA"]["API_ENDPOINT"]
+USERNAME = config["JIRA"]["USERNAME"]
+API_TOKEN = config["JIRA"]["API_TOKEN"]
 
 # Function to create a story in Jira
 def create_jira_story(project_key, summary, description, issue_type="Story"):
-    url = JIRA_URL + API_ENDPOINT
+    url = f"{JIRA_URL}{API_ENDPOINT}"
     auth = (USERNAME, API_TOKEN)
     print(url)
     headers = {
