@@ -8,7 +8,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 JIRA_URL = "https://tarundeeptrial.atlassian.net"
 API_ENDPOINT = "/rest/api/2/issue"
 USERNAME = "tarundeep.sharma2009@gmail.com"
-API_TOKEN = "ATATT3xFfGF0f4KxMXInWccouRk-avst9DrdFla32YoowRV-NDZnYDDCLa4gGYEqbudncl25RThmQS53k2pmHiSgdqZD1sbTehWyXHuYzRZcEfxjXhjRnCOLklc7Ict8J9f34FrD9mA6y4EP8aNpl3FBsvwIqh7GCPKQ9yvqPnV4ANVab9AirHo=A69C4BD8"
+API_TOKEN = "ATATT3xFfGF0Vwe0-G76r1AyOUUT_CM3ISFLaPgtRN_M5HXDZvAr2p-8KhI55MvY6DZfwEpvPDwgKTdqZxIu4JfaPbCDHaB4GK-NdyIxofriG7zWsI-R6VSlCsG9uIHWRbs6X0U_A74HuHr_q5F3c4FbeKhONKomeCpyqSgYxOCp-QsJyCHvphY=76D071F3"
 
 # Function to create a story in Jira
 def create_jira_story(project_key, summary, description, issue_type="Story"):

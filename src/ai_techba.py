@@ -105,17 +105,21 @@ with st.sidebar:
     st.markdown("4. You can create a Test Data for your tables.")
     st.markdown("5. The AI will try to provide you with the best answer.")
 
+
 # Your HTML content
 words = """<h3>You can ask me questions like:</h3>
     <ol>
-        <li>What are the tables in database?</li>
-        <li>Generate relationship diagram for DimProduct Table</li>
+        <li>What is in database?</li>
+        <li>Create Jira story for mapping new attribute in DimProduct table AccountKey which refers to primary key in DimAccount Table</li>
         <li>Create Jira story for mapping new attribute in DimProduct table AccountKey which refers to primary key in DimAccount Table</li>
         <li>What are the possible joins for DimProduct table?</li>
         <li>Generate a DDL for the new table name DimFun having primary key action_id joined with DimProductCategory table</li>
         <li>What kind of data in the database from business perspective?</li>
         <li>I want to ingest data from DimProduct table into new table DimProducta which has all columns same as DimProduct but EnglishProductName and SpanishProductName from DimProduct Table concatenated into Column ProductNames in DimProducta</li>
     </ol>"""
+
+with st.expander("Sample Questions to ask:"):
+    st.markdown(words,unsafe_allow_html=True)
 def stream_data():
     for word in words.split(" "):
         yield word + " "
@@ -124,8 +128,7 @@ def stream_data():
 if "messages" not in st.session_state:
     st.session_state["messages"] = [ChatMessage(
         role="assistant", content="""How can I help you? :pray:""")]
-    with st.expander("Sample Questions?"):
-        st.markdown(words,unsafe_allow_html=True)
+    
     # st.session_state["messages"] = [ChatMessage(role="assistant", content="Here is the dataframe "+azai.rs.to_csv(index=False))]
     # messages.append({"role": "user", "content": f"Here is the dataframe:\n"})
     # st.session_state["messages"] = [ChatMessage(role="assistant", content="Please provide me with the database schema")]
@@ -157,7 +160,9 @@ if prompt := st.chat_input():
                 for msg in st.session_state.messages]
     # messages = st.session_state.messages
     # Add dataframe content as a new message
-    messages.append({"role": "user", "content": f"Refer this dataframe:\n {azai.rs.to_csv(index=False)}"})
+    messages.append({"role": "user", "content": f"Refer this dataframes:\n {azai.rs.to_csv(index=False)}"})
+    messages.append({"role": "user", "content": f"And also refer to this dataframes:\n {azai.allData.to_csv(index=False)}"})
+    #messages.append({"role": "user", "content": f"Refer this dataframe:\n {azai.rs.to_csv(index=False)}"})
     tools = [
         {
             "type": "function",

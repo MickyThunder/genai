@@ -59,7 +59,7 @@ def getDataFrame(cursor,rows):
     return df
 def get_schema_details(cursor):
     # Fetch table names
-    cursor.execute("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' and TABLE_NAME like '%DimProduct%' ")
+    cursor.execute("SELECT TABLE_NAME,TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' ")
     table_names = [row[0] for row in cursor]
 
     # Fetch column details for each table
@@ -69,6 +69,25 @@ def get_schema_details(cursor):
         schema_details[table_name] = [row for row in cursor]
     return schema_details
     #conn.close()  # Close the database connection
+def get_all_tables(cursor):
+    query = """SELECT 
+                t.TABLE_NAME,
+                c.COLUMN_NAME,
+                c.DATA_TYPE
+            FROM 
+                INFORMATION_SCHEMA.TABLES t
+            JOIN 
+                INFORMATION_SCHEMA.COLUMNS c ON t.TABLE_NAME = c.TABLE_NAME
+            WHERE 
+                t.TABLE_SCHEMA = 'dbo'
+            ORDER BY 
+                t.TABLE_NAME, c.ORDINAL_POSITION;"""
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    df = getDataFrame(cursor,rows=rows)
+    return df
+
+
     
 def convert_sql_response_to_schema(sql_response):
     schema_lines = []
@@ -155,7 +174,11 @@ cursor = connect_to_db()
 #formated_schema = convert_sql_response_to_schema(schema)
 #print (formated_schema)
 rs = get_db_relationship(cursor=cursor)
-print(rs)
+allData = get_all_tables(cursor)
+merged = pd.concat([rs,allData],axis=1)
+merged.to_csv('a2.csv')
+#merged_df = pd.concat([df_schema, df_fk], axis=1)
+print(merged)
 # Get unique table names from Parent_Table and Referenced_Table
 unique_tables = pd.Series(rs['Parent_Table'].tolist() + rs['Referenced_Table'].tolist()).unique()
 unique_tables = [table.lower() for table in unique_tables]
